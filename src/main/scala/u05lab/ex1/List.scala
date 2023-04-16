@@ -1,5 +1,4 @@
 package u05lab.ex1
-
 import u05lab.ex1.List
 
 // Ex 1. implement the missing methods both with recursion or with using fold, map, flatMap, and filters
@@ -59,16 +58,39 @@ enum List[A]:
   def reverse(): List[A] = foldLeft[List[A]](Nil())((l, e) => e :: l)
 
   /** EXERCISES */
-  def zipRight: List[(A, Int)] = ???
 
-  def partition(pred: A => Boolean): (List[A], List[A]) = ???
+  // Task 1
+  def zipRight: List[(A, Int)] =
+    foldRight(Nil())((a, l) => (a, l match
+      case Nil() => this.length - 1
+      case (_ , i) :: _ => i - 1) :: l)
 
-  def span(pred: A => Boolean): (List[A], List[A]) = ???
+  // Task 2
+  def partition(pred: A => Boolean): (List[A], List[A]) =
+    foldRight(Nil(), Nil())((a, l) => l match
+      case (lt, lf) => pred(a) match
+        case true => (a :: lt, lf)
+        case _ => (lt, a :: lf))
+
+  // Task 3
+  def span(pred: A => Boolean): (List[A], List[A]) =
+    foldRight(Nil(), Nil())((a, l) => l match
+      case (lt, lf) => pred(a) match
+        case true => (a :: lt, lf)
+        case _ => (Nil(), a :: lt append lf))
 
   /** @throws UnsupportedOperationException if the list is empty */
-  def reduce(op: (A, A) => A): A = ???
 
-  def takeRight(n: Int): List[A] = ???
+  // Task 4
+  def reduce(op: (A, A) => A): A = this match
+    case Nil() => throw UnsupportedOperationException()
+    case h :: t => t.foldLeft(h)(op)
+
+  // Task 5
+  def takeRight(n: Int): List[A] =
+    foldRight(Nil())((a, l) => l.length match
+      case d if d < n => a :: l
+      case _ => l)
 
 // Factories
 object List:
